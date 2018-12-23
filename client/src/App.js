@@ -171,6 +171,23 @@ class App extends Component {
 
     }
 
+    else if(message === "/delete" + message.substr(7)){
+      var del = message.substr(7);
+
+      this.socket.emit('delete_room',del);
+
+      this.socket.on('delete_err', (name_good) => {
+        if(name_good === 1)
+        {
+          this.notification("red", "Vous venez de supprimer le channel " + del + " !");
+        }
+        else{
+          this.notification("red", "Ce channel n'existe pas !");
+
+          }
+        })
+    }
+
     else{
       this.socket.emit('data', {blaze, message});
     }

@@ -13,10 +13,10 @@ io.sockets.on('connection', function (socket) {
 
     if(socket.room !== true){
         socket.join('random');
-        console.log(channel)
+        // console.log(channel)
     }
 
-        console.log(channel)
+        // console.log(channel)
 
         console.log("User connecter sur le channel "+ channel);
 
@@ -25,7 +25,7 @@ io.sockets.on('connection', function (socket) {
 
         console.log(nom + " est connecté ");
 
-        users.push(nom);
+        // users.push(nom);
 
         io.sockets.emit('blaze', nom );
     }); 
@@ -47,11 +47,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('room_name', function(name){
         socket.room = name;
 
-        console.log(room)
+        // console.log(room)
         // console.log(socket.room)
         console.log("Le channel" + socket.room +" a été créé ")
         room.push(name)
-        console.log(room)
+        // console.log(room)
 
     });
 
@@ -59,7 +59,7 @@ io.sockets.on('connection', function (socket) {
         var join_or_no = 0;
 
             room.forEach(function(element) {
-                console.log(element)
+                // console.log(element)
                 // console.log(name.room_name)
 
                 if(name.room_name === element)
@@ -107,6 +107,27 @@ io.sockets.on('connection', function (socket) {
 
     });
 
+    socket.on('delete_room', function(del){
+        var name_good = 0
+        room.forEach(function(element) {
+            if(del === element)
+            {
+                var pos = room.indexOf(del);
+                var removedItem = room.splice(pos, 1);
+                // console.log(element);
+                // console.log(del)
+                // console.log(room)
+                name_good = 1;
+                io.sockets.emit('delete_err', name_good );
+
+            }
+            else{
+                io.sockets.emit('delete_err', name_good );
+                console.log("channel incconnu")
+            }
+
+        })
+    })
     // socket.on('disconnect', function(socket){
     //     socket.leave('random');
 
