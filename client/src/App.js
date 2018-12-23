@@ -20,18 +20,10 @@ class App extends Component {
                   edit: [],
                   resultats: []
                 }
-    // this.state = {message: ''};
-
-    // this.state = {pseudo: ''};
-
-    // this.state = {edit: []};
-
-    // this.state = {resultats: []};
-
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    
+
     
     this.socket.on('result', (data) => {
       this.setState({
@@ -46,16 +38,7 @@ class App extends Component {
         edit: [ ...this.state.edit, edit_blaze ]
       })
 
-      document.getElementById("body").style.color = "orange";
-      document.getElementById("body").style.visibility = "visible";
-
-      document.getElementById("body").innerHTML = edit_blaze.ancien_blaze + " a changé son pseudo en " + edit_blaze.new_blaze;
-
-      setTimeout(edit, 3000)
-        function edit()
-        {
-          document.getElementById("body").style.visibility = "hidden";
-        }
+      this.notification("orange", edit_blaze.ancien_blaze + " a changé son pseudo en " + edit_blaze.new_blaze);
 
     });
 
@@ -123,42 +106,99 @@ class App extends Component {
 
         if(user_co === "")
         {
-          document.getElementById("body").style.color = "red";
-          document.getElementById("body").style.visibility = "visible";
+          this.notification("red","aucun user connecté sur ce channel");
 
-          document.getElementById("body").innerHTML = "aucun user connecté sur ce channel";
-
-          setTimeout(edit, 3000)
-            function edit()
-            {
-              document.getElementById("body").style.visibility = "hidden";
-            }
       }
-
+      
       else{
-        document.getElementById("body").style.color = "blue";
-        document.getElementById("body").style.visibility = "visible";
   
-        document.getElementById("body").innerHTML = user_co + " connecté sur ce channel";
-  
-        setTimeout(edit, 3000)
-          function edit()
-          {
-            document.getElementById("body").style.visibility = "hidden";
-          }
+        this.notification("blue", user_co + " connecté sur ce channel");
+
       }
 
     }
+
+    else if(message === '/create' + message.substr(7))
+    {
+      var name = message.substr(7)
+      this.socket.emit('room_name',name);
+
+      this.notification("purple", "Le channel " + name +" a bien été créé. Taper /join " + name + " pour le rejoindre ");
+    
+    }
+
+    else if(message === '/join' + message.substr(5)){
+      var room_name = message.substr(5)
+      var pseudo_join = sessionStorage.getItem('pseudo');
+
+      // alert(name)
+      this.socket.emit('join_room_name',{room_name,pseudo_join });
+
+
+      this.socket.on('erreur_join', (join_or_no) => {
+
+          if(join_or_no === 1)
+          {
+            this.notification("orange", "Bienvenu sur " + room_name + " !");
+
+
+          }
+          else  {
+            this.notification("red", "Le channel " + room_name + " n'existe pas !");
+          }
+      });
+
+
+      
+
+    }
+
+    else if(message === '/part' + message.substr(5)){
+      var room_nom = message.substr(5)
+      this.socket.emit('quit_room_name',room_nom);
+
+      this.socket.on('quit_serv', (exist) => {
+        if(exist === 1)
+        {
+          this.notification("red", "Vous venez de quitter le channel " + room_nom + " !");
+        }
+        else{
+          this.notification("red", "Vous n'êtes pas connecter a ce channel !");
+
+        }
+      })
+
+
+    }
+
     else{
       this.socket.emit('data', {blaze, message});
     }
 
   }
+
+
+    notification(color, paragraphe)
+    {
+
+      document.getElementById("body").style.color = color;
+      document.getElementById("body").style.visibility = "visible";
+
+      document.getElementById("body").innerHTML = paragraphe;
+
+      setTimeout(edit, 4000)
+        function edit()
+        {
+          document.getElementById("body").style.visibility = "hidden";
+        }
+    }
+
+
+
     deco()
     {
       sessionStorage.removeItem('pseudo');
       window.location.href = '/';
-
     }
   render() {
 
@@ -228,7 +268,7 @@ class App extends Component {
 
           {
             liste.map(function(item, i){
-              // console.log(i);
+              // console.log(item);
               return <p key={i}> {item.blaze} a envoyé : {item.message} </p>
             })  
           }
@@ -236,16 +276,6 @@ class App extends Component {
             <div>
               <p id="body"></p>
             </div>
-
-          {
-            // newpseudo.map(function(item, i){
-            //   console.log(i);
-            //   return <p key={i}> {item.ancien_blaze} a modifié son pseudo en  : {item.new_blaze} </p>
-            // })
-            // <p>{ newpseudo.ancien_blaze }</p>
-            // console.log(newpseudo)
-          }
-
 
               </div>
               
