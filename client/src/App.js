@@ -182,7 +182,7 @@ class App extends Component {
           this.notification("red", "Vous venez de supprimer le channel " + del + " !");
         }
         else{
-          this.notification("red", "Ce channel n'existe pas !");
+          this.notification("red", "Le channel"+ del +" n'existe pas !");
 
           }
         })
@@ -251,11 +251,13 @@ class App extends Component {
 
                 return(
                   <form onSubmit={ submit }>
-                    <label>
+                    <label class="input-group-text">
                       Pseudo:
                       <input type="text" value={ username } onChange={ value_change }/>
+                      <div class="col-md-3 offset-md-3">
+                      <input class="btn-success" type="submit" value="Submit" id="pseudo" onClick={ function_redirect }/>
+                    </div>
                     </label>
-                    <input type="submit" value="Submit" id="pseudo" onClick={ function_redirect }/>
                   </form>
                 );
               }}/>
@@ -273,21 +275,26 @@ class App extends Component {
               }
               return(
                 <div>
-                  <button onClick = {deco}>Deconnection</button>
+
                 <form onSubmit={ submit }>
-                <label>
+                <label class="input-group-text">
                   Message:
                   <input type="text" value={ message } onChange={ new_value }/>
+                  <input type="submit" class="btn-success" value="Submit" id="pseudo" onClick={ send_message } />
+                  <div class="col-md-3 offset-md-3">
+                  <button class="btn-danger" onClick = {deco}>Deconnection</button>
+                  </div>
                 </label>
-                <input type="submit" value="Submit" id="pseudo" onClick={ send_message } />
               </form>
+
 
 
           {
             liste.map(function(item, i){
               // console.log(item);
-              return <p key={i}> {item.blaze} a envoyé : {item.message} </p>
+              return <p key={i} class="p-3 mb-2 bg-light text-dark"> {item.blaze} a envoyé : {item.message} </p>
             })  
+            
           }
 
             <div>

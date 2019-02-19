@@ -109,6 +109,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('delete_room', function(del){
         var name_good = 0
+
         room.forEach(function(element) {
             if(del === element)
             {
